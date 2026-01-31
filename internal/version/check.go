@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/Masterminds/semver/v3"
 )
 
 const (
@@ -57,14 +59,25 @@ func CheckLatestVersion(currentVersion string) (*ReleaseInfo, error) {
 	return &release, nil
 }
 
-// IsUpdateAvailable checks if a newer version is available
+// IsUpdateAvailable checks if a newer version is available using semantic versioning
 func IsUpdateAvailable(currentVersion, latestVersion string) bool {
-	// Remove 'v' prefix for comparison
+	// Remove 'v' prefix
 	current := strings.TrimPrefix(currentVersion, "v")
 	latest := strings.TrimPrefix(latestVersion, "v")
 
-	// Simple comparison - if versions are different, assume update available
-	return current != latest
+	currentSemver, err := semver.NewVersion(current)
+	if err != nil {
+		// Fallback to string comparison if version parsing fails
+		return current != latest
+	}
+
+	latestSemver, err := semver.NewVersion(latest)
+	if err != nil {
+		// Fallback to string comparison if version parsing fails
+		return current != latest
+	}
+
+	return latestSemver.GreaterThan(currentSemver)
 }
 
 // GetUpdateMessage returns a formatted update notification message

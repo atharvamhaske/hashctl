@@ -9,9 +9,8 @@ import (
 )
 
 var (
-	Version   = "dev"
-	Commit    = "none"
-	BuildDate = "unknown"
+	Version   = "v0.1.0"
+	BuildDate = "2026-01-30"
 )
 
 var versionCmd = &cobra.Command{
@@ -29,7 +28,6 @@ func runVersion(cmd *cobra.Command, args []string) {
 	value := tui.ValueStyle
 
 	fmt.Println(label.Render("version   ") + value.Render(Version))
-	fmt.Println(label.Render("commit    ") + value.Render(Commit))
 	fmt.Println(label.Render("built     ") + value.Render(BuildDate))
 	fmt.Println(label.Render("go        ") + value.Render(runtime.Version()))
 	fmt.Println(label.Render("platform  ") + value.Render(runtime.GOOS+"/"+runtime.GOARCH))

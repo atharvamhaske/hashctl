@@ -6,6 +6,7 @@ A beautiful terminal UI for computing cryptographic hashes.
 ![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
 ![Release](https://img.shields.io/github/v/release/atharvamhaske/hashctl?style=flat-square)
 
+
 ## Features
 
 - **Interactive TUI** — keyboard-driven interface with Bubble Tea
@@ -14,25 +15,6 @@ A beautiful terminal UI for computing cryptographic hashes.
 - **Clean aesthetic** — minimal, focused design
 
 ## Installation Guide
-
-### Download Binary (Recommended)
-
-Download the pre-built binary for your platform from [GitHub Releases](https://github.com/atharvamhaske/hashctl/releases):
-
-```bash
-# Linux
-wget https://github.com/atharvamhaske/hashctl/releases/latest/download/hashctl-linux-amd64
-chmod +x hashctl-linux-amd64
-sudo mv hashctl-linux-amd64 /usr/local/bin/hashctl
-
-# macOS
-wget https://github.com/atharvamhaske/hashctl/releases/latest/download/hashctl-darwin-arm64
-chmod +x hashctl-darwin-arm64
-sudo mv hashctl-darwin-arm64 /usr/local/bin/hashctl
-
-# Windows
-# Download hashctl-windows-amd64.exe and add to PATH
-```
 
 ### Install via Go
 

@@ -1,8 +1,9 @@
 # hashctl ⟡
 
-A beautiful terminal UI for computing cryptographic hashes build using bubbletea, lipgloss in Go.
+A beautiful terminal UI for computing cryptographic hashes.
 
 ![hashctl](https://img.shields.io/badge/go-1.21+-00ADD8?style=flat-square&logo=go)
+![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
 
 ## Features
 
@@ -43,19 +44,84 @@ hashctl list     # Show all algorithms
 hashctl version  # Print version info
 ```
 
-## Keyboard
+## Use as a Library
 
-| Key | Action |
-|-----|--------|
-| `↑` `k` | Move up |
-| `↓` `j` | Move down |
-| `enter` | Select / Confirm |
-| `s` | Hash string |
-| `f` | Hash file |
-| `n` | New hash (same algorithm) |
-| `r` | Restart |
-| `esc` | Go back |
-| `q` | Quit |
+You can import hashctl's hasher package in your own Go code:
+
+```go
+package main
+
+import (
+    "fmt"
+    "github.com/atharvamhaske/hashctl/internal/hasher"
+)
+
+func main() {
+    // Hash a string
+    opts := hasher.DefaultOptions()
+    opts.Algorithm = "sha256"
+    
+    result := hasher.HashString("hello world", opts)
+    if result.Error != nil {
+        panic(result.Error)
+    }
+    fmt.Println(result.Hash)
+    // Output: b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9
+
+    // Hash a file
+    fileResult := hasher.HashFile("/path/to/file.txt", opts)
+    if fileResult.Error != nil {
+        panic(fileResult.Error)
+    }
+    fmt.Println(fileResult.Hash)
+
+    // Hash multiple files in parallel
+    files := []string{"file1.txt", "file2.txt", "file3.txt"}
+    hasher.HashFiles(files, opts, func(r hasher.Result) {
+        fmt.Printf("%s  %s\n", r.Hash, r.Input)
+    })
+
+    // List available algorithms
+    for _, name := range hasher.ListNames() {
+        alg, _ := hasher.GetAlgorithm(name)
+        fmt.Printf("%s: %s\n", name, alg.Description)
+    }
+}
+```
+
+### Available Functions
+
+```go
+// Hash a string
+hasher.HashString(input string, opts Options) Result
+
+// Hash a single file
+hasher.HashFile(filename string, opts Options) Result
+
+// Hash multiple files in parallel with ordered output
+hasher.HashFiles(files []string, opts Options, onResult func(Result))
+
+// Get algorithm by name
+hasher.GetAlgorithm(name string) (Algorithm, bool)
+
+// List all algorithm names
+hasher.ListNames() []string
+
+// Get algorithms grouped by category
+hasher.GetAlgorithmsByCategory() map[Category][]Algorithm
+```
+
+### Result Struct
+
+```go
+type Result struct {
+    Input    string        // filename or string input
+    Hash     string        // hex-encoded hash
+    Error    error         // any error that occurred
+    IsFile   bool          // true if input is a file
+    Duration time.Duration // computation time
+}
+```
 
 ## Algorithms
 
@@ -83,4 +149,4 @@ hashctl version  # Print version info
 
 ## License
 
-MIT
+[MIT](LICENSE)

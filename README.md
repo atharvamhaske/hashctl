@@ -4,6 +4,7 @@ A beautiful terminal UI for computing cryptographic hashes.
 
 ![hashctl](https://img.shields.io/badge/go-1.21+-00ADD8?style=flat-square&logo=go)
 ![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
+![Release](https://img.shields.io/github/v/release/atharvamhaske/hashctl?style=flat-square)
 
 ## Features
 
@@ -12,29 +13,40 @@ A beautiful terminal UI for computing cryptographic hashes.
 - **Hash strings or files** — simple input modes
 - **Clean aesthetic** — minimal, focused design
 
-## Install
+## Installation Guide
+
+### Download Binary (Recommended)
+
+Download the pre-built binary for your platform from [GitHub Releases](https://github.com/atharvamhaske/hashctl/releases):
+
+```bash
+# Linux
+wget https://github.com/atharvamhaske/hashctl/releases/latest/download/hashctl-linux-amd64
+chmod +x hashctl-linux-amd64
+sudo mv hashctl-linux-amd64 /usr/local/bin/hashctl
+
+# macOS
+wget https://github.com/atharvamhaske/hashctl/releases/latest/download/hashctl-darwin-arm64
+chmod +x hashctl-darwin-arm64
+sudo mv hashctl-darwin-arm64 /usr/local/bin/hashctl
+
+# Windows
+# Download hashctl-windows-amd64.exe and add to PATH
+```
+
+### Install via Go
 
 ```bash
 go install github.com/atharvamhaske/hashctl@latest
 ```
 
-Or build from source:
+### Build from Source
 
 ```bash
 git clone https://github.com/atharvamhaske/hashctl
 cd hashctl
 go build -o hashctl .
 ```
-
-## Usage
-
-Just run it:
-
-```bash
-hashctl
-```
-
-Use arrow keys to select an algorithm, then choose to hash a string or file.
 
 ### Commands
 
@@ -44,7 +56,7 @@ hashctl list     # Show all algorithms
 hashctl version  # Print version info
 ```
 
-## Use as a Library
+## Use as a Go pkg
 
 You can import hashctl's hasher package in your own Go code:
 
@@ -89,7 +101,7 @@ func main() {
 }
 ```
 
-### Available Functions
+### List of all Functions
 
 ```go
 // Hash a string
@@ -111,19 +123,7 @@ hasher.ListNames() []string
 hasher.GetAlgorithmsByCategory() map[Category][]Algorithm
 ```
 
-### Result Struct
-
-```go
-type Result struct {
-    Input    string        // filename or string input
-    Hash     string        // hex-encoded hash
-    Error    error         // any error that occurred
-    IsFile   bool          // true if input is a file
-    Duration time.Duration // computation time
-}
-```
-
-## Algorithms
+## Available Algorithms
 
 ### Checksums
 - CRC32

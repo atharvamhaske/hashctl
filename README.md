@@ -4,7 +4,7 @@ A beautiful terminal UI for computing cryptographic hashes.
 
 ![hashctl](https://img.shields.io/badge/go-1.21+-00ADD8?style=flat-square&logo=go)
 ![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
-![Release](https://img.shields.io/github/v/release/atharvamhaske/hashctl?style=flat-square&include_prereleases=false)
+![Release](https://img.shields.io/github/v/release/atharvamhaske/hashctl?style=flat-square)
 
 
 ## Features

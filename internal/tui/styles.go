@@ -62,34 +62,34 @@ var (
 
 // List styles - Big text for categories
 var (
-	// Big highlighted selected item (like port list) - use padding and borders for size
+	// Big highlighted selected item - smaller box, bigger text
 	BigSelectedStyle = lipgloss.NewStyle().
 				Foreground(ColorPrimary).
 				Bold(true).
-				Padding(2, 4).
+				Padding(1, 3).
 				Background(ColorBgAlt).
 				Border(lipgloss.RoundedBorder()).
 				BorderForeground(ColorPrimary).
-				Width(50).
-				Height(4)
+				Width(45).
+				Height(3)
 
-	// Big unselected item
+	// Big unselected item - smaller box
 	BigUnselectedStyle = lipgloss.NewStyle().
 				Foreground(ColorMuted).
-				Padding(2, 4).
-				Width(50).
-				Height(4)
+				Padding(1, 3).
+				Width(45).
+				Height(3)
 
-	// Algorithm list styles
+	// Algorithm list styles - bigger text
 	SelectedStyle = lipgloss.NewStyle().
 			Foreground(ColorPrimary).
 			Bold(true).
-			Padding(0, 2).
+			Padding(1, 3).
 			Background(ColorBgAlt)
 
 	UnselectedStyle = lipgloss.NewStyle().
 			Foreground(ColorFg).
-			Padding(0, 2)
+			Padding(1, 3)
 
 	DescStyle = lipgloss.NewStyle().
 			Foreground(ColorMuted).

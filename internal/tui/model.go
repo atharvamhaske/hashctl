@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/atharvamhaske/hashctl/internal/hasher"
+	"github.com/atharvamhaske/hashctl/internal/version"
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -354,14 +355,14 @@ func (m Model) viewCategorySelect() string {
 
 	for i, cat := range categories {
 		isSelected := m.categoryIndex == i
-		catName := cat.String()
+		catName := strings.ToUpper(cat.String()) // UPPERCASE
 
 		if isSelected {
-			// Big highlighted selected item
+			// Big highlighted selected item with uppercase
 			item := BigSelectedStyle.Render(catName)
 			s.WriteString(item)
 		} else {
-			// Big unselected item
+			// Big unselected item with uppercase
 			item := BigUnselectedStyle.Render(catName)
 			s.WriteString(item)
 		}
@@ -369,6 +370,14 @@ func (m Model) viewCategorySelect() string {
 	}
 
 	s.WriteString(HelpStyle.Render("↑/↓ select • enter confirm • q quit"))
+
+	// Check for updates (non-blocking, subtle notification)
+	if latest, err := version.CheckLatestVersion(CurrentVersion); err == nil {
+		if version.IsUpdateAvailable(CurrentVersion, latest.TagName) {
+			s.WriteString("\n")
+			s.WriteString(DimStyle.Render("💡 Update available: run 'hashctl check' for details"))
+		}
+	}
 
 	return s.String()
 }
@@ -379,16 +388,17 @@ func (m Model) viewAlgorithmSelect() string {
 	// Header
 	s.WriteString(LogoStyle.Render("hashctl"))
 	s.WriteString(LogoAccent.Render(" ⟡ "))
-	s.WriteString(LabelStyle.Render(m.selectedCategory.String()))
+	s.WriteString(LabelStyle.Render(strings.ToUpper(m.selectedCategory.String())))
 	s.WriteString("\n\n")
 
 	// Show only algorithms from selected category
 	for i, alg := range m.algorithms {
 		isSelected := m.algorithmIndex == i
+		algName := strings.ToUpper(alg.Name) // UPPERCASE
 
 		if isSelected {
 			s.WriteString(Cursor())
-			s.WriteString(SelectedStyle.Render(alg.Name))
+			s.WriteString(SelectedStyle.Render(algName))
 			s.WriteString("\n")
 			s.WriteString(DescStyle.Render(alg.Description))
 			if alg.IsPasswordHash {
@@ -397,7 +407,7 @@ func (m Model) viewAlgorithmSelect() string {
 			}
 		} else {
 			s.WriteString(NoCursor())
-			s.WriteString(UnselectedStyle.Render(alg.Name))
+			s.WriteString(UnselectedStyle.Render(algName))
 		}
 		s.WriteString("\n")
 	}

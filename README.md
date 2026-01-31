@@ -35,7 +35,8 @@ go build -o hashctl .
 ```bash
 hashctl          # Launch TUI
 hashctl list     # Show all algorithms
-hashctl version  # Print version info
+hashctl version  # Print version info and check for updates
+hashctl check    # Check for available updates
 ```
 
 ## Use as a Go pkg

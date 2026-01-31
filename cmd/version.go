@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	Version   = "v0.3.0"
+	Version   = "v1.0.0"
 	BuildDate = "2026-01-31"
 )
 

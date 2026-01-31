@@ -4,11 +4,11 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-// Clean, minimal color palette inspired by charmbracelet projects
+// Neon magenta/purple theme - flat, no boxes
 var (
-	// Primary accent - soft pink/magenta
-	ColorPrimary = lipgloss.Color("#FF6B9D")
-	ColorAccent  = lipgloss.Color("#C792EA")
+	// Primary accent - neon magenta/purple
+	ColorPrimary = lipgloss.Color("#FF4ECD")
+	ColorAccent  = lipgloss.Color("#C77DFF")
 
 	// Secondary colors
 	ColorCyan   = lipgloss.Color("#89DDFF")
@@ -17,14 +17,11 @@ var (
 	ColorOrange = lipgloss.Color("#F78C6C")
 	ColorRed    = lipgloss.Color("#FF5370")
 
-	// Grayscale
+	// Grayscale - muted lavender/gray-purple
 	ColorWhite  = lipgloss.Color("#FFFFFF")
-	ColorFg     = lipgloss.Color("#EEFFFF")
-	ColorMuted  = lipgloss.Color("#676E95")
-	ColorDim    = lipgloss.Color("#4A5568")
-	ColorBorder = lipgloss.Color("#3B4252")
-	ColorBg     = lipgloss.Color("#0F111A")
-	ColorBgAlt  = lipgloss.Color("#1A1C25")
+	ColorFg     = lipgloss.Color("#E0D4FF")
+	ColorMuted  = lipgloss.Color("#8B7FA8")
+	ColorDim    = lipgloss.Color("#5C5478")
 )
 
 // Logo and branding
@@ -47,7 +44,7 @@ var (
 			Foreground(ColorMuted)
 
 	LabelStyle = lipgloss.NewStyle().
-			Foreground(ColorCyan).
+			Foreground(ColorAccent).
 			Bold(true)
 
 	ValueStyle = lipgloss.NewStyle().
@@ -60,51 +57,39 @@ var (
 			Foreground(ColorDim)
 )
 
-// List styles - Big text for categories
+// Category/Algorithm styles - flat, no boxes
 var (
-	// Big highlighted selected item - smaller box, bigger text
+	// Selected item - bright magenta, no background
 	BigSelectedStyle = lipgloss.NewStyle().
 				Foreground(ColorPrimary).
 				Bold(true).
-				Padding(1, 3).
-				Background(ColorBgAlt).
-				Border(lipgloss.RoundedBorder()).
-				BorderForeground(ColorPrimary).
-				Width(45).
-				Height(3)
+				PaddingLeft(2)
 
-	// Big unselected item - smaller box
+	// Unselected item - muted, no background
 	BigUnselectedStyle = lipgloss.NewStyle().
 				Foreground(ColorMuted).
-				Padding(1, 3).
-				Width(45).
-				Height(3)
+				PaddingLeft(2)
 
-	// Algorithm list styles - bigger text
+	// Algorithm list styles - flat
 	SelectedStyle = lipgloss.NewStyle().
 			Foreground(ColorPrimary).
-			Bold(true).
-			Padding(1, 3).
-			Background(ColorBgAlt)
+			Bold(true)
 
 	UnselectedStyle = lipgloss.NewStyle().
-			Foreground(ColorFg).
-			Padding(1, 3)
+			Foreground(ColorMuted)
 
 	DescStyle = lipgloss.NewStyle().
-			Foreground(ColorMuted).
+			Foreground(ColorDim).
 			Italic(true).
 			PaddingLeft(4)
 
 	CategoryStyle = lipgloss.NewStyle().
 			Foreground(ColorAccent).
-			Bold(true).
-			MarginTop(1)
+			Bold(true)
 
 	WarningCategoryStyle = lipgloss.NewStyle().
 				Foreground(ColorOrange).
-				Bold(true).
-				MarginTop(1)
+				Bold(true)
 )
 
 // Status styles
@@ -121,33 +106,30 @@ var (
 			Foreground(ColorYellow)
 
 	SpinnerStyle = lipgloss.NewStyle().
-			Foreground(ColorCyan)
+			Foreground(ColorAccent)
 )
 
-// Box styles
+// Input styles - minimal, no box
 var (
-	BoxStyle = lipgloss.NewStyle().
-			Border(lipgloss.RoundedBorder()).
-			BorderForeground(ColorBorder).
-			Padding(1, 2)
-
-	ResultBoxStyle = lipgloss.NewStyle().
-			Border(lipgloss.RoundedBorder()).
-			BorderForeground(ColorGreen).
-			Padding(1, 2)
-
-	InputBoxStyle = lipgloss.NewStyle().
-			Border(lipgloss.RoundedBorder()).
-			BorderForeground(ColorCyan).
-			Padding(2, 3).
-			Width(60)
-
-	// Big input text style (no placeholder, big text)
-	BigInputStyle = lipgloss.NewStyle().
+	InputStyle = lipgloss.NewStyle().
 			Foreground(ColorFg).
-			Bold(true).
-			Width(60).
-			Height(3)
+			Bold(true)
+
+	InputLabelStyle = lipgloss.NewStyle().
+			Foreground(ColorAccent)
+)
+
+// Result styles - flat
+var (
+	HashStyle = lipgloss.NewStyle().
+			Foreground(ColorGreen).
+			Bold(true)
+
+	FileStyle = lipgloss.NewStyle().
+			Foreground(ColorAccent)
+
+	StringStyle = lipgloss.NewStyle().
+			Foreground(ColorPrimary)
 )
 
 // Help bar
@@ -155,58 +137,23 @@ var (
 	HelpStyle = lipgloss.NewStyle().
 			Foreground(ColorDim).
 			MarginTop(2)
-
-	HelpKeyStyle = lipgloss.NewStyle().
-			Foreground(ColorMuted)
-
-	HelpDescStyle = lipgloss.NewStyle().
-			Foreground(ColorDim)
 )
 
-// Hash display
-var (
-	HashStyle = lipgloss.NewStyle().
-			Foreground(ColorGreen).
-			Bold(true)
-
-	FileStyle = lipgloss.NewStyle().
-			Foreground(ColorCyan)
-
-	StringStyle = lipgloss.NewStyle().
-			Foreground(ColorAccent)
-)
-
-// App container
+// App container - minimal padding
 var (
 	AppStyle = lipgloss.NewStyle().
-		Padding(1, 2)
+			Padding(1, 2)
 )
 
 // Cursor for selection
 func Cursor() string {
 	return lipgloss.NewStyle().
 		Foreground(ColorPrimary).
+		Bold(true).
 		Render("▸ ")
 }
 
 // No cursor (spacing)
 func NoCursor() string {
 	return "  "
-}
-
-// Badge renders a small badge
-func Badge(text string, color lipgloss.Color) string {
-	return lipgloss.NewStyle().
-		Foreground(color).
-		Bold(true).
-		Render("[" + text + "]")
-}
-
-// Divider renders a horizontal line
-func Divider(width int) string {
-	line := ""
-	for i := 0; i < width; i++ {
-		line += "─"
-	}
-	return DimStyle.Render(line)
 }

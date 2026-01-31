@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/atharvamhaske/hashctl/internal/hasher"
-	"github.com/atharvamhaske/hashctl/internal/version"
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -38,7 +37,7 @@ type Model struct {
 	inputMode InputMode
 
 	// Category selection
-	categoryIndex int
+	categoryIndex    int
 	selectedCategory hasher.Category
 
 	// Algorithm selection
@@ -345,7 +344,7 @@ func (m Model) viewCategorySelect() string {
 	s.WriteString(LogoAccent.Render(" ⟡"))
 	s.WriteString("\n")
 	s.WriteString(SubtitleStyle.Render("compute cryptographic hashes for strings & files"))
-	s.WriteString("\n\n")
+	s.WriteString("\n\n\n")
 
 	categories := []hasher.Category{
 		hasher.CategoryChecksum,
@@ -355,29 +354,22 @@ func (m Model) viewCategorySelect() string {
 
 	for i, cat := range categories {
 		isSelected := m.categoryIndex == i
-		catName := strings.ToUpper(cat.String()) // UPPERCASE
+		catName := strings.ToUpper(cat.String())
 
 		if isSelected {
-			// Big highlighted selected item with uppercase
-			item := BigSelectedStyle.Render(catName)
-			s.WriteString(item)
+			// Bright magenta - selected
+			s.WriteString(Cursor())
+			s.WriteString(BigSelectedStyle.Render(catName))
 		} else {
-			// Big unselected item with uppercase
-			item := BigUnselectedStyle.Render(catName)
-			s.WriteString(item)
+			// Muted - unselected
+			s.WriteString(NoCursor())
+			s.WriteString(BigUnselectedStyle.Render(catName))
 		}
-		s.WriteString("\n\n")
+		s.WriteString("\n")
 	}
 
+	s.WriteString("\n")
 	s.WriteString(HelpStyle.Render("↑/↓ select • enter confirm • q quit"))
-
-	// Check for updates (non-blocking, subtle notification)
-	if latest, err := version.CheckLatestVersion(CurrentVersion); err == nil {
-		if version.IsUpdateAvailable(CurrentVersion, latest.TagName) {
-			s.WriteString("\n")
-			s.WriteString(DimStyle.Render("💡 Update available: run 'hashctl check' for details"))
-		}
-	}
 
 	return s.String()
 }
@@ -389,12 +381,12 @@ func (m Model) viewAlgorithmSelect() string {
 	s.WriteString(LogoStyle.Render("hashctl"))
 	s.WriteString(LogoAccent.Render(" ⟡ "))
 	s.WriteString(LabelStyle.Render(strings.ToUpper(m.selectedCategory.String())))
-	s.WriteString("\n\n")
+	s.WriteString("\n\n\n")
 
 	// Show only algorithms from selected category
 	for i, alg := range m.algorithms {
 		isSelected := m.algorithmIndex == i
-		algName := strings.ToUpper(alg.Name) // UPPERCASE
+		algName := strings.ToUpper(alg.Name)
 
 		if isSelected {
 			s.WriteString(Cursor())
@@ -423,22 +415,16 @@ func (m Model) viewInputMode() string {
 
 	s.WriteString(LogoStyle.Render("hashctl"))
 	s.WriteString(LogoAccent.Render(" ⟡ "))
-	s.WriteString(LabelStyle.Render(m.selectedAlgo.Name))
+	s.WriteString(LabelStyle.Render(strings.ToUpper(m.selectedAlgo.Name)))
 	s.WriteString("\n\n")
 
 	s.WriteString(SubtitleStyle.Render("what do you want to hash?"))
 	s.WriteString("\n\n")
 
-	s.WriteString("  ")
-	s.WriteString(Badge("s", ColorCyan))
-	s.WriteString("  ")
-	s.WriteString(ValueStyle.Render("hash a string"))
+	s.WriteString(SelectedStyle.Render("s  hash a string"))
 	s.WriteString("\n\n")
 
-	s.WriteString("  ")
-	s.WriteString(Badge("f", ColorCyan))
-	s.WriteString("  ")
-	s.WriteString(ValueStyle.Render("hash a file"))
+	s.WriteString(UnselectedStyle.Render("f  hash a file"))
 	s.WriteString("\n\n")
 
 	s.WriteString(HelpStyle.Render("s string • f file • esc back • q quit"))
@@ -463,14 +449,9 @@ func (m Model) viewTextInput() string {
 	s.WriteString(SubtitleStyle.Render(label))
 	s.WriteString("\n\n")
 
-	// Big input field - no placeholder, big text
+	// Flat input - no box
 	inputView := m.textInput.View()
-	// Make input bigger with padding and styling
-	inputBox := InputBoxStyle.
-		Width(70).
-		Height(5).
-		Render(inputView)
-	s.WriteString(inputBox)
+	s.WriteString(InputStyle.Render(inputView))
 	s.WriteString("\n\n")
 
 	s.WriteString(HelpStyle.Render("enter hash • esc back"))
@@ -507,9 +488,7 @@ func (m Model) viewResults() string {
 		s.WriteString(ErrorStyle.Render("error: " + m.err.Error()))
 		s.WriteString("\n")
 	} else {
-		s.WriteString(LabelStyle.Render(m.selectedAlgo.Name))
-		s.WriteString("\n")
-		s.WriteString(Divider(50))
+		s.WriteString(LabelStyle.Render(strings.ToUpper(m.selectedAlgo.Name)))
 		s.WriteString("\n\n")
 
 		for _, r := range m.results {
@@ -529,9 +508,8 @@ func (m Model) viewResults() string {
 				}
 				s.WriteString("\n\n")
 
-				// Hash result in a box
-				hashBox := ResultBoxStyle.Render(HashStyle.Render(r.Hash))
-				s.WriteString(hashBox)
+				// Hash result - flat, no box
+				s.WriteString(HashStyle.Render(r.Hash))
 				s.WriteString("\n\n")
 
 				s.WriteString(DimStyle.Render(fmt.Sprintf("computed in %s", r.Duration.Round(time.Microsecond))))

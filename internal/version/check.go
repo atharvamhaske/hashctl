@@ -70,10 +70,9 @@ func IsUpdateAvailable(currentVersion, latestVersion string) bool {
 // GetUpdateMessage returns a formatted update notification message
 func GetUpdateMessage(currentVersion, latestVersion, releaseURL string) string {
 	return fmt.Sprintf(
-		"⚠️  Update available: %s → %s\n   Download: %s",
+		" Update available: %s → %s\n   Download: %s",
 		currentVersion,
 		latestVersion,
 		releaseURL,
 	)
 }
-

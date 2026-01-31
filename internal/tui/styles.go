@@ -60,18 +60,41 @@ var (
 			Foreground(ColorDim)
 )
 
-// List styles
+// List styles - Big text for categories
 var (
+	// Big highlighted selected item (like port list) - use padding and borders for size
+	BigSelectedStyle = lipgloss.NewStyle().
+				Foreground(ColorPrimary).
+				Bold(true).
+				Padding(2, 4).
+				Background(ColorBgAlt).
+				Border(lipgloss.RoundedBorder()).
+				BorderForeground(ColorPrimary).
+				Width(50).
+				Height(4)
+
+	// Big unselected item
+	BigUnselectedStyle = lipgloss.NewStyle().
+				Foreground(ColorMuted).
+				Padding(2, 4).
+				Width(50).
+				Height(4)
+
+	// Algorithm list styles
 	SelectedStyle = lipgloss.NewStyle().
 			Foreground(ColorPrimary).
-			Bold(true)
+			Bold(true).
+			Padding(0, 2).
+			Background(ColorBgAlt)
 
 	UnselectedStyle = lipgloss.NewStyle().
-			Foreground(ColorFg)
+			Foreground(ColorFg).
+			Padding(0, 2)
 
 	DescStyle = lipgloss.NewStyle().
 			Foreground(ColorMuted).
-			Italic(true)
+			Italic(true).
+			PaddingLeft(4)
 
 	CategoryStyle = lipgloss.NewStyle().
 			Foreground(ColorAccent).
@@ -116,7 +139,15 @@ var (
 	InputBoxStyle = lipgloss.NewStyle().
 			Border(lipgloss.RoundedBorder()).
 			BorderForeground(ColorCyan).
-			Padding(0, 1)
+			Padding(2, 3).
+			Width(60)
+
+	// Big input text style (no placeholder, big text)
+	BigInputStyle = lipgloss.NewStyle().
+			Foreground(ColorFg).
+			Bold(true).
+			Width(60).
+			Height(3)
 )
 
 // Help bar

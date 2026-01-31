@@ -37,3 +37,4 @@ sha256sum hashctl-* > checksums.txt
 echo "Done! Binaries built:"
 ls -lh hashctl-*
 
+

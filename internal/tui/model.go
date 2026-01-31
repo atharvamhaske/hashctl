@@ -15,7 +15,8 @@ import (
 type State int
 
 const (
-	StateAlgorithmSelect State = iota
+	StateCategorySelect State = iota
+	StateAlgorithmSelect
 	StateInputMode
 	StateTextInput
 	StateHashing
@@ -34,6 +35,10 @@ const (
 type Model struct {
 	state     State
 	inputMode InputMode
+
+	// Category selection
+	categoryIndex int
+	selectedCategory hasher.Category
 
 	// Algorithm selection
 	algorithms     []hasher.Algorithm
@@ -75,16 +80,17 @@ func NewModel() Model {
 	algs := hasher.GetSortedAlgorithms()
 
 	ti := textinput.New()
-	ti.Placeholder = "type here..."
+	ti.Placeholder = "" // No placeholder - big empty input
 	ti.CharLimit = 10000
-	ti.Width = 50
+	ti.Width = 70 // Bigger width for input
 
 	s := spinner.New()
 	s.Spinner = spinner.MiniDot
 	s.Style = SpinnerStyle
 
 	return Model{
-		state:          StateAlgorithmSelect,
+		state:          StateCategorySelect,
+		categoryIndex:  0,
 		algorithms:     algs,
 		algorithmIndex: 0,
 		textInput:      ti,
@@ -115,6 +121,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 		switch m.state {
+		case StateCategorySelect:
+			return m.handleCategorySelect(msg)
 		case StateAlgorithmSelect:
 			return m.handleAlgorithmSelect(msg)
 		case StateInputMode:
@@ -151,10 +159,50 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
+func (m Model) handleCategorySelect(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	categories := []hasher.Category{
+		hasher.CategoryChecksum,
+		hasher.CategoryFastHash,
+		hasher.CategoryPasswordHash,
+	}
+
+	switch msg.String() {
+	case "q", "ctrl+c":
+		return m, tea.Quit
+	case "up", "k":
+		if m.categoryIndex > 0 {
+			m.categoryIndex--
+		}
+	case "down", "j":
+		if m.categoryIndex < len(categories)-1 {
+			m.categoryIndex++
+		}
+	case "enter", " ":
+		m.selectedCategory = categories[m.categoryIndex]
+		// Filter algorithms by category
+		allAlgs := hasher.GetSortedAlgorithms()
+		m.algorithms = []hasher.Algorithm{}
+		for _, alg := range allAlgs {
+			if alg.Category == m.selectedCategory {
+				m.algorithms = append(m.algorithms, alg)
+			}
+		}
+		m.algorithmIndex = 0
+		m.state = StateAlgorithmSelect
+	case "home", "g":
+		m.categoryIndex = 0
+	case "end", "G":
+		m.categoryIndex = len(categories) - 1
+	}
+	return m, nil
+}
+
 func (m Model) handleAlgorithmSelect(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	switch msg.String() {
-	case "q", "esc":
+	case "q":
 		return m, tea.Quit
+	case "esc":
+		m.state = StateCategorySelect
 	case "up", "k":
 		if m.algorithmIndex > 0 {
 			m.algorithmIndex--
@@ -183,14 +231,14 @@ func (m Model) handleInputMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		m.state = StateAlgorithmSelect
 	case "s", "1":
 		m.inputMode = InputModeString
-		m.textInput.Placeholder = "enter text to hash..."
+		m.textInput.Placeholder = "" // No placeholder
 		m.textInput.Reset()
 		m.textInput.Focus()
 		m.state = StateTextInput
 		return m, textinput.Blink
 	case "f", "2":
 		m.inputMode = InputModeFile
-		m.textInput.Placeholder = "enter file path..."
+		m.textInput.Placeholder = "" // No placeholder
 		m.textInput.Reset()
 		m.textInput.Focus()
 		m.state = StateTextInput
@@ -232,11 +280,13 @@ func (m Model) handleResults(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "q":
 		return m, tea.Quit
 	case "esc", "r":
-		m.state = StateAlgorithmSelect
+		m.state = StateCategorySelect
 		m.results = nil
 		m.err = nil
 		m.textInput.Reset()
 		m.files = nil
+		m.categoryIndex = 0
+		m.algorithmIndex = 0
 	case "n":
 		// New hash with same algorithm
 		m.results = nil
@@ -269,6 +319,8 @@ func (m Model) View() string {
 	var s strings.Builder
 
 	switch m.state {
+	case StateCategorySelect:
+		s.WriteString(m.viewCategorySelect())
 	case StateAlgorithmSelect:
 		s.WriteString(m.viewAlgorithmSelect())
 	case StateInputMode:
@@ -284,7 +336,7 @@ func (m Model) View() string {
 	return AppStyle.Render(s.String())
 }
 
-func (m Model) viewAlgorithmSelect() string {
+func (m Model) viewCategorySelect() string {
 	var s strings.Builder
 
 	// Header
@@ -294,53 +346,64 @@ func (m Model) viewAlgorithmSelect() string {
 	s.WriteString(SubtitleStyle.Render("compute cryptographic hashes for strings & files"))
 	s.WriteString("\n\n")
 
-	// Group by category
-	byCategory := hasher.GetAlgorithmsByCategory()
 	categories := []hasher.Category{
 		hasher.CategoryChecksum,
 		hasher.CategoryFastHash,
 		hasher.CategoryPasswordHash,
 	}
 
-	globalIndex := 0
-	for _, cat := range categories {
-		algs, ok := byCategory[cat]
-		if !ok || len(algs) == 0 {
-			continue
+	for i, cat := range categories {
+		isSelected := m.categoryIndex == i
+		catName := cat.String()
+
+		if isSelected {
+			// Big highlighted selected item
+			item := BigSelectedStyle.Render(catName)
+			s.WriteString(item)
+		} else {
+			// Big unselected item
+			item := BigUnselectedStyle.Render(catName)
+			s.WriteString(item)
 		}
+		s.WriteString("\n\n")
+	}
 
-		// Category header
-		catStyle := CategoryStyle
-		if cat == hasher.CategoryPasswordHash {
-			catStyle = WarningCategoryStyle
-		}
-		s.WriteString(catStyle.Render(cat.String()))
-		s.WriteString("\n")
+	s.WriteString(HelpStyle.Render("↑/↓ select • enter confirm • q quit"))
 
-		for _, alg := range algs {
-			isSelected := m.algorithmIndex == globalIndex
+	return s.String()
+}
 
-			if isSelected {
-				s.WriteString(Cursor())
-				s.WriteString(SelectedStyle.Render(alg.Name))
-				s.WriteString("\n")
-				s.WriteString("   ")
-				s.WriteString(DescStyle.Render(alg.Description))
-				if alg.IsPasswordHash {
-					s.WriteString("\n   ")
-					s.WriteString(WarningStyle.Render("⚠ slow on large inputs"))
-				}
-			} else {
-				s.WriteString(NoCursor())
-				s.WriteString(UnselectedStyle.Render(alg.Name))
-			}
+func (m Model) viewAlgorithmSelect() string {
+	var s strings.Builder
+
+	// Header
+	s.WriteString(LogoStyle.Render("hashctl"))
+	s.WriteString(LogoAccent.Render(" ⟡ "))
+	s.WriteString(LabelStyle.Render(m.selectedCategory.String()))
+	s.WriteString("\n\n")
+
+	// Show only algorithms from selected category
+	for i, alg := range m.algorithms {
+		isSelected := m.algorithmIndex == i
+
+		if isSelected {
+			s.WriteString(Cursor())
+			s.WriteString(SelectedStyle.Render(alg.Name))
 			s.WriteString("\n")
-			globalIndex++
+			s.WriteString(DescStyle.Render(alg.Description))
+			if alg.IsPasswordHash {
+				s.WriteString("\n")
+				s.WriteString(WarningStyle.Render("  ⚠ slow on large inputs"))
+			}
+		} else {
+			s.WriteString(NoCursor())
+			s.WriteString(UnselectedStyle.Render(alg.Name))
 		}
+		s.WriteString("\n")
 	}
 
 	s.WriteString("\n")
-	s.WriteString(HelpStyle.Render("↑/↓ select • enter confirm • q quit"))
+	s.WriteString(HelpStyle.Render("↑/↓ select • enter confirm • esc back • q quit"))
 
 	return s.String()
 }
@@ -390,8 +453,13 @@ func (m Model) viewTextInput() string {
 	s.WriteString(SubtitleStyle.Render(label))
 	s.WriteString("\n\n")
 
-	// Input field
-	inputBox := InputBoxStyle.Render(m.textInput.View())
+	// Big input field - no placeholder, big text
+	inputView := m.textInput.View()
+	// Make input bigger with padding and styling
+	inputBox := InputBoxStyle.
+		Width(70).
+		Height(5).
+		Render(inputView)
 	s.WriteString(inputBox)
 	s.WriteString("\n\n")
 

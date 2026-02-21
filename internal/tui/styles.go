@@ -27,12 +27,12 @@ var (
 
 // Brand pixel art – 2-line half-block font (same technique as PMG)
 //
-//   H   A   S   H   C   T   L
-//   █▄█ ▄▀▄ █▀▀ █▄█ █▀▀ ▀█▀ █
-//   █ █ █▀█ ▀▀█ █ █ █▄▄  █  █▄▄
+//	H   A   S   H   C   T   L
+//	█▄█ ▄▀▄ █▀▀ █▄█ █▀▀ ▀█▀ █
+//	█ █ █▀█ ▄▄█ █ █ █▄▄  █  █▄▄
 var (
 	BrandLine1 = "█▄█ ▄▀▄ █▀▀ █▄█ █▀▀ ▀█▀ █"
-	BrandLine2 = "█ █ █▀█ ▀▀█ █ █ █▄▄  █  █▄▄"
+	BrandLine2 = "█ █ █▀█ ▄▄█ █ █ █▄▄  █  █▄▄"
 )
 
 // Logo and branding
@@ -150,14 +150,14 @@ var (
 // Help bar
 var (
 	HelpStyle = lipgloss.NewStyle().
-			Foreground(ColorDim).
-			MarginTop(1)
+		Foreground(ColorDim).
+		MarginTop(1)
 )
 
 // App container - minimal padding
 var (
 	AppStyle = lipgloss.NewStyle().
-			Padding(1, 2)
+		Padding(1, 2)
 )
 
 // NewListDelegate returns a bubbles/list delegate styled with the neon magenta/purple theme.

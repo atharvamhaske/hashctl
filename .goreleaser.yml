@@ -32,7 +32,8 @@ archives:
     name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}"
     format_overrides:
       - goos: windows
-        format: zip
+        formats:
+          - zip
     files:
       - LICENSE
       - README.md
@@ -58,6 +59,7 @@ release:
     name: hashctl
   draft: false
   prerelease: auto
+  replace_existing: true
   name_template: "hashctl {{.Tag}}"
   footer: |
     ## Install

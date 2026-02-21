@@ -59,7 +59,7 @@ release:
     name: hashctl
   draft: false
   prerelease: auto
-  replace_existing: true
+  replace_existing_artifacts: true
   name_template: "hashctl {{.Tag}}"
   footer: |
     ## Install

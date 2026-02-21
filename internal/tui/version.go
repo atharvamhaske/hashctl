@@ -2,5 +2,5 @@ package tui
 
 // CurrentVersion is the current version of hashctl
 // This should match cmd.Version
-const CurrentVersion = "v1.2.1"
+const CurrentVersion = "v1.2.2"
 

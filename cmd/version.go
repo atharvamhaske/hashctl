@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"runtime"
 
 	"github.com/atharvamhaske/hashctl/internal/tui"
 	"github.com/atharvamhaske/hashctl/internal/version"
@@ -15,7 +16,7 @@ var (
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "Print version and check for updates",
+	Short: "Print version info",
 	Run:   runVersion,
 }
 
@@ -27,10 +28,16 @@ var checkCmd = &cobra.Command{
 }
 
 func runVersion(cmd *cobra.Command, args []string) {
-	// Show compact PMG-style banner with version
-	PrintBanner()
+	fmt.Println()
+	label := tui.MutedStyle
+	value := tui.ValueStyle
 
-	// Non-blocking update check
+	fmt.Println(label.Render("version   ") + value.Render(Version))
+	fmt.Println(label.Render("built     ") + value.Render(BuildDate))
+	fmt.Println(label.Render("go        ") + value.Render(runtime.Version()))
+	fmt.Println(label.Render("platform  ") + value.Render(runtime.GOOS+"/"+runtime.GOARCH))
+	fmt.Println()
+
 	latest, err := version.CheckLatestVersion(Version)
 	if err == nil && version.IsUpdateAvailable(Version, latest.TagName) {
 		fmt.Println(tui.WarningStyle.Render(
@@ -41,7 +48,6 @@ func runVersion(cmd *cobra.Command, args []string) {
 }
 
 func runCheck(cmd *cobra.Command, args []string) {
-	// No banner here — just the update check
 	fmt.Println()
 	fmt.Println(tui.MutedStyle.Render("Checking for updates..."))
 	fmt.Println()

@@ -25,8 +25,22 @@ var (
 	ColorDim   = lipgloss.Color("#5C5478")
 )
 
+// Brand pixel art – 2-line half-block font (same technique as PMG)
+//
+//   H   A   S   H   C   T   L
+//   █▄█ ▄▀▄ █▀▀ █▄█ █▀▀ ▀█▀ █
+//   █ █ █▀█ ▀▀█ █ █ █▄▄  █  █▄▄
+var (
+	BrandLine1 = "█▄█ ▄▀▄ █▀▀ █▄█ █▀▀ ▀█▀ █"
+	BrandLine2 = "█ █ █▀█ ▀▀█ █ █ █▄▄  █  █▄▄"
+)
+
 // Logo and branding
 var (
+	BrandStyle = lipgloss.NewStyle().
+			Foreground(ColorPrimary).
+			Bold(true)
+
 	LogoStyle = lipgloss.NewStyle().
 			Bold(true).
 			Foreground(ColorPrimary)

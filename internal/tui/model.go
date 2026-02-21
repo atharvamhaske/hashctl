@@ -416,8 +416,9 @@ func (m Model) View() string {
 
 func (m Model) viewCategorySelect() string {
 	var s strings.Builder
-	s.WriteString(LogoStyle.Render("hashctl"))
-	s.WriteString(LogoAccent.Render(" ⟡"))
+	s.WriteString(BrandStyle.Render(BrandLine1))
+	s.WriteString("\n")
+	s.WriteString(BrandStyle.Render(BrandLine2))
 	s.WriteString("\n")
 	s.WriteString(SubtitleStyle.Render("compute cryptographic hashes for strings & files"))
 	s.WriteString("\n\n")

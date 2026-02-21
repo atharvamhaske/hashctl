@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/lipgloss"
 )
 
@@ -18,10 +19,10 @@ var (
 	ColorRed    = lipgloss.Color("#FF5370")
 
 	// Grayscale - muted lavender/gray-purple
-	ColorWhite  = lipgloss.Color("#FFFFFF")
-	ColorFg     = lipgloss.Color("#E0D4FF")
-	ColorMuted  = lipgloss.Color("#8B7FA8")
-	ColorDim    = lipgloss.Color("#5C5478")
+	ColorWhite = lipgloss.Color("#FFFFFF")
+	ColorFg    = lipgloss.Color("#E0D4FF")
+	ColorMuted = lipgloss.Color("#8B7FA8")
+	ColorDim   = lipgloss.Color("#5C5478")
 )
 
 // Logo and branding
@@ -136,7 +137,7 @@ var (
 var (
 	HelpStyle = lipgloss.NewStyle().
 			Foreground(ColorDim).
-			MarginTop(2)
+			MarginTop(1)
 )
 
 // App container - minimal padding
@@ -145,15 +146,48 @@ var (
 			Padding(1, 2)
 )
 
-// Cursor for selection
-func Cursor() string {
-	return lipgloss.NewStyle().
+// NewListDelegate returns a bubbles/list delegate styled with the neon magenta/purple theme.
+// When showDesc is true it renders the description line below the title (fancy-list style).
+func NewListDelegate(showDesc bool) list.DefaultDelegate {
+	d := list.NewDefaultDelegate()
+	d.ShowDescription = showDesc
+
+	// Selected – neon magenta title + accent description, normal left border coloured magenta
+	d.Styles.SelectedTitle = lipgloss.NewStyle().
+		Border(lipgloss.NormalBorder(), false, false, false, true).
+		BorderForeground(ColorPrimary).
 		Foreground(ColorPrimary).
 		Bold(true).
-		Render("▸ ")
-}
+		Padding(0, 0, 0, 1)
 
-// No cursor (spacing)
-func NoCursor() string {
-	return "  "
+	d.Styles.SelectedDesc = lipgloss.NewStyle().
+		Border(lipgloss.NormalBorder(), false, false, false, true).
+		BorderForeground(ColorPrimary).
+		Foreground(ColorAccent).
+		Padding(0, 0, 0, 1)
+
+	// Normal (unselected)
+	d.Styles.NormalTitle = lipgloss.NewStyle().
+		Foreground(ColorMuted).
+		Padding(0, 0, 0, 2)
+
+	d.Styles.NormalDesc = lipgloss.NewStyle().
+		Foreground(ColorDim).
+		Padding(0, 0, 0, 2)
+
+	// Dimmed (when a filter is active and this item doesn't match)
+	d.Styles.DimmedTitle = lipgloss.NewStyle().
+		Foreground(ColorDim).
+		Padding(0, 0, 0, 2)
+
+	d.Styles.DimmedDesc = lipgloss.NewStyle().
+		Foreground(ColorDim).
+		Padding(0, 0, 0, 2)
+
+	// Filter match – underline the matching characters in magenta
+	d.Styles.FilterMatch = lipgloss.NewStyle().
+		Underline(true).
+		Foreground(ColorPrimary)
+
+	return d
 }

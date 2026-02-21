@@ -38,3 +38,5 @@ echo "Done! Binaries built:"
 ls -lh hashctl-*
 
 
+
+

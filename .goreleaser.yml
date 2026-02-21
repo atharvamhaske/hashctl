@@ -1,0 +1,75 @@
+# GoReleaser v2 config
+# docs: https://goreleaser.com
+version: 2
+
+project_name: hashctl
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: hashctl
+    main: .
+    binary: hashctl
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X github.com/atharvamhaske/hashctl/cmd.Version={{.Tag}}
+      - -X github.com/atharvamhaske/hashctl/cmd.BuildDate={{.CommitDate}}
+
+archives:
+  - id: hashctl
+    # e.g. hashctl-linux-amd64.tar.gz
+    name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - LICENSE
+      - README.md
+
+checksum:
+  name_template: checksums.txt
+  algorithm: sha256
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^ci:"
+      - "Merge pull request"
+      - "Merge branch"
+
+release:
+  github:
+    owner: atharvamhaske
+    name: hashctl
+  draft: false
+  prerelease: auto
+  name_template: "hashctl {{.Tag}}"
+  footer: |
+    ## Install
+
+    **Go install**
+    ```sh
+    go install github.com/atharvamhaske/hashctl@{{.Tag}}
+    ```
+
+    **Download binary** – pick your platform from the assets above, then:
+    ```sh
+    chmod +x hashctl-linux-amd64
+    sudo mv hashctl-linux-amd64 /usr/local/bin/hashctl
+    ```
+

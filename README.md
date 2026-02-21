@@ -1,28 +1,46 @@
 # hashctl ⟡
 
-A beautiful terminal UI for computing cryptographic hashes.
+A terminal UI for computing cryptographic hashes — fast, minimal, keyboard-driven.
 
-![hashctl](https://img.shields.io/badge/go-1.21+-00ADD8?style=flat-square&logo=go)
+![Go](https://img.shields.io/badge/go-1.21+-00ADD8?style=flat-square&logo=go)
 ![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
 ![Release](https://img.shields.io/github/v/release/atharvamhaske/hashctl?style=flat-square)
 
+---
 
 ## Features
 
-- **Interactive TUI** — keyboard-driven interface with Bubble Tea
-- **20+ algorithms** — SHA-256, SHA-512, BLAKE2, SHA-3, MD5, bcrypt, Argon2id...
-- **Hash strings or files** — simple input modes
-- **Clean aesthetic** — minimal, focused design
+- **Fancy list TUI** — powered by [Bubble Tea](https://github.com/charmbracelet/bubbletea) `list` component with live `/` filtering
+- **20 + algorithms** — SHA-2, SHA-3, BLAKE2, MD5, RIPEMD-160, bcrypt, Argon2id, CRC32 and more
+- **Hash strings or files** — switch modes in one keypress
+- **Auto update check** — tells you when a newer version is available on every run
+- **Neon magenta / purple theme** — clean hacker-style UI, no boxes, flat layout
+- **Released via GoReleaser** — pre-built binaries for Linux, macOS, Windows (amd64 + arm64)
 
-## Installation Guide
+---
 
-### Install via Go
+## Installation
+
+### Pre-built binary (recommended)
+
+Download the binary for your platform from the [latest release](https://github.com/atharvamhaske/hashctl/releases/latest), then:
+
+```bash
+# Linux / macOS
+chmod +x hashctl-linux-amd64
+sudo mv hashctl-linux-amd64 /usr/local/bin/hashctl
+
+# Verify
+hashctl version
+```
+
+### Go install
 
 ```bash
 go install github.com/atharvamhaske/hashctl@latest
 ```
 
-### Build from Source
+### Build from source
 
 ```bash
 git clone https://github.com/atharvamhaske/hashctl
@@ -30,105 +48,102 @@ cd hashctl
 go build -o hashctl .
 ```
 
-### Commands
+---
+
+## Usage
 
 ```bash
-hashctl          # Launch TUI
-hashctl list     # Show all algorithms
-hashctl version  # Print version info and check for updates
-hashctl check    # Check for available updates
+hashctl          # Launch the interactive TUI
+hashctl list     # Print all supported algorithms
+hashctl version  # Show version info and check for updates
+hashctl check    # Check for a newer release on GitHub
 ```
 
-## Use as a Go pkg
+### TUI navigation
 
-You can import hashctl's hasher package in your own Go code:
+| Key | Action |
+|-----|--------|
+| `↑` / `↓` | Move selection |
+| `enter` | Confirm / select |
+| `/` | Filter algorithms by name |
+| `esc` | Go back one screen |
+| `s` | Hash a string |
+| `f` | Hash a file path |
+| `n` | New hash with same algorithm |
+| `r` | Restart from category select |
+| `q` / `ctrl+c` | Quit |
+
+---
+
+## Available Algorithms
+
+### Checksums (non-cryptographic)
+`CRC32`
+
+### Fast Cryptographic Hashes
+`MD5` · `SHA-1` · `SHA-224` · `SHA-256` · `SHA-384` · `SHA-512`
+`SHA-512/224` · `SHA-512/256`
+`SHA3-224` · `SHA3-256` · `SHA3-384` · `SHA3-512`
+`RIPEMD-160`
+`BLAKE2b-256` · `BLAKE2b-384` · `BLAKE2b-512` · `BLAKE2s-256`
+
+### Password Hashing / KDFs
+`bcrypt` · `Argon2id`
+
+---
+
+## Use as a Go library
 
 ```go
-package main
-
-import (
-    "fmt"
-    "github.com/atharvamhaske/hashctl/internal/hasher"
-)
+import "github.com/atharvamhaske/hashctl/internal/hasher"
 
 func main() {
-    // Hash a string
     opts := hasher.DefaultOptions()
     opts.Algorithm = "sha256"
-    
-    result := hasher.HashString("hello world", opts)
-    if result.Error != nil {
-        panic(result.Error)
-    }
-    fmt.Println(result.Hash)
-    // Output: b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9
+
+    // Hash a string
+    r := hasher.HashString("hello world", opts)
+    fmt.Println(r.Hash)
 
     // Hash a file
-    fileResult := hasher.HashFile("/path/to/file.txt", opts)
-    if fileResult.Error != nil {
-        panic(fileResult.Error)
-    }
-    fmt.Println(fileResult.Hash)
+    r = hasher.HashFile("/path/to/file.txt", opts)
+    fmt.Println(r.Hash)
 
-    // Hash multiple files in parallel
-    files := []string{"file1.txt", "file2.txt", "file3.txt"}
-    hasher.HashFiles(files, opts, func(r hasher.Result) {
+    // Hash multiple files in parallel (output order preserved)
+    hasher.HashFiles([]string{"a.txt", "b.txt"}, opts, func(r hasher.Result) {
         fmt.Printf("%s  %s\n", r.Hash, r.Input)
     })
 
-    // List available algorithms
+    // Enumerate algorithms
     for _, name := range hasher.ListNames() {
         alg, _ := hasher.GetAlgorithm(name)
-        fmt.Printf("%s: %s\n", name, alg.Description)
+        fmt.Printf("%-20s %s\n", name, alg.Description)
     }
 }
 ```
 
-### List of all Functions
+### API reference
 
 ```go
-// Hash a string
 hasher.HashString(input string, opts Options) Result
-
-// Hash a single file
 hasher.HashFile(filename string, opts Options) Result
-
-// Hash multiple files in parallel with ordered output
 hasher.HashFiles(files []string, opts Options, onResult func(Result))
-
-// Get algorithm by name
 hasher.GetAlgorithm(name string) (Algorithm, bool)
-
-// List all algorithm names
 hasher.ListNames() []string
-
-// Get algorithms grouped by category
 hasher.GetAlgorithmsByCategory() map[Category][]Algorithm
 ```
 
-## Available Algorithms
+---
 
-### Checksums
-- CRC32
-
-### Fast Cryptographic Hashes
-- MD5, SHA-1
-- SHA-224, SHA-256, SHA-384, SHA-512
-- SHA-512/224, SHA-512/256
-- SHA3-224, SHA3-256, SHA3-384, SHA3-512
-- RIPEMD-160
-- BLAKE2b-256, BLAKE2b-384, BLAKE2b-512
-- BLAKE2s-256
-
-### Password Hashing
-- bcrypt
-- Argon2id
-
-## Built With
+## Built with
 
 - [Bubble Tea](https://github.com/charmbracelet/bubbletea) — TUI framework
-- [Lip Gloss](https://github.com/charmbracelet/lipgloss) — Styling
-- [Cobra](https://github.com/spf13/cobra) — CLI
+- [Bubbles](https://github.com/charmbracelet/bubbles) — `list`, `textinput`, `spinner` components
+- [Lip Gloss](https://github.com/charmbracelet/lipgloss) — terminal styling
+- [Cobra](https://github.com/spf13/cobra) — CLI commands
+- [GoReleaser](https://goreleaser.com) — cross-platform release automation
+
+---
 
 ## License
 

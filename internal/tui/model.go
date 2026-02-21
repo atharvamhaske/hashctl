@@ -503,9 +503,9 @@ func (m Model) viewResults() string {
 		s.WriteString("\n\n")
 		for _, r := range m.results {
 			if r.Error != nil {
-				s.WriteString(ErrorStyle.Render("✗ "+r.Input))
+				s.WriteString(ErrorStyle.Render("✗ " + r.Input))
 				s.WriteString("\n")
-				s.WriteString(MutedStyle.Render("  "+r.Error.Error()))
+				s.WriteString(MutedStyle.Render("  " + r.Error.Error()))
 				s.WriteString("\n\n")
 			} else {
 				if r.IsFile {

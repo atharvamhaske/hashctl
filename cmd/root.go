@@ -7,15 +7,8 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "hashctl",
-	Short: "Interactive hashing TUI",
-	Long: `hashctl is an interactive terminal UI for computing cryptographic hashes.
-
-Launch hashctl to select from 20+ algorithms and hash strings or files
-with a beautiful, keyboard-driven interface.
-
-Supported algorithms include SHA-256, SHA-512, BLAKE2, SHA-3, MD5, 
-bcrypt, Argon2id, and more.`,
+	Use:           "hashctl",
+	Short:         "Interactive hashing TUI",
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -32,4 +25,9 @@ func init() {
 	rootCmd.AddCommand(listCmd)
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(checkCmd)
+
+	// Replace Cobra's default help with our PMG-style banner + usage
+	rootCmd.SetHelpFunc(func(cmd *cobra.Command, args []string) {
+		PrintUsage()
+	})
 }

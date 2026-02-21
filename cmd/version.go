@@ -27,10 +27,10 @@ var checkCmd = &cobra.Command{
 }
 
 func runVersion(cmd *cobra.Command, args []string) {
-	// Full PMG-style banner with version metadata embedded
+	// Show compact PMG-style banner with version
 	PrintBanner()
 
-	// Update check (non-blocking best-effort)
+	// Non-blocking update check
 	latest, err := version.CheckLatestVersion(Version)
 	if err == nil && version.IsUpdateAvailable(Version, latest.TagName) {
 		fmt.Println(tui.WarningStyle.Render(
@@ -41,14 +41,14 @@ func runVersion(cmd *cobra.Command, args []string) {
 }
 
 func runCheck(cmd *cobra.Command, args []string) {
-	PrintBanner()
-
+	// No banner here — just the update check
+	fmt.Println()
 	fmt.Println(tui.MutedStyle.Render("Checking for updates..."))
 	fmt.Println()
 
 	latest, err := version.CheckLatestVersion(Version)
 	if err != nil {
-		fmt.Println(tui.ErrorStyle.Render("✗ Failed to check for updates: " + err.Error()))
+		fmt.Println(tui.ErrorStyle.Render("✗ Failed to check: " + err.Error()))
 		fmt.Println()
 		return
 	}
@@ -56,15 +56,15 @@ func runCheck(cmd *cobra.Command, args []string) {
 	if version.IsUpdateAvailable(Version, latest.TagName) {
 		fmt.Println(tui.WarningStyle.Render("Update available!"))
 		fmt.Println()
-		fmt.Println(tui.LabelStyle.Render("Current version:") + " " + tui.ValueStyle.Render(Version))
-		fmt.Println(tui.LabelStyle.Render("Latest version: ") + " " + tui.SuccessStyle.Render(latest.TagName))
+		fmt.Println(tui.LabelStyle.Render("Current: ") + tui.ValueStyle.Render(Version))
+		fmt.Println(tui.LabelStyle.Render("Latest:  ") + tui.SuccessStyle.Render(latest.TagName))
 		fmt.Println()
 		fmt.Println(tui.MutedStyle.Render("Download: ") + tui.ValueStyle.Render(latest.URL))
 		fmt.Println()
 	} else {
 		fmt.Println(tui.SuccessStyle.Render("✓ You're on the latest version!"))
 		fmt.Println()
-		fmt.Println(tui.LabelStyle.Render("Version: ") + " " + tui.ValueStyle.Render(Version))
+		fmt.Println(tui.LabelStyle.Render("Version: ") + tui.ValueStyle.Render(Version))
 		fmt.Println()
 	}
 }

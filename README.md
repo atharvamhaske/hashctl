@@ -8,6 +8,8 @@ A terminal UI for computing cryptographic hashes — fast, minimal, keyboard-dri
 
 ---
 
+![hashctl](hashctl.png)
+
 ## Features
 
 - **Fancy list TUI** — powered by [Bubble Tea](https://github.com/charmbracelet/bubbletea) `list` component with live `/` filtering

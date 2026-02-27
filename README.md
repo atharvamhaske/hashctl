@@ -6,6 +6,7 @@ A terminal UI for computing cryptographic hashes — fast, minimal, keyboard-dri
 ![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
 ![Release](https://img.shields.io/github/v/release/atharvamhaske/hashctl?style=flat-square)
 
+---
 
 ![hashctl](hashctl.png)
 

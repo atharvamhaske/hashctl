@@ -1,3 +1,5 @@
+
+
 # hashctl ⟡
 
 A terminal UI for computing cryptographic hashes — fast, minimal, keyboard-driven.
@@ -25,12 +27,13 @@ A terminal UI for computing cryptographic hashes — fast, minimal, keyboard-dri
 
 ### Pre-built binary (recommended)
 
-Download the binary for your platform from the [latest release](https://github.com/atharvamhaske/hashctl/releases/latest), then:
+Download the archive for your platform from the [latest release](https://github.com/atharvamhaske/hashctl/releases/latest), extract it, then:
 
 ```bash
 # Linux / macOS
-chmod +x hashctl-linux-amd64
-sudo mv hashctl-linux-amd64 /usr/local/bin/hashctl
+tar -xzf hashctl-linux-amd64.tar.gz
+chmod +x hashctl
+sudo mv hashctl /usr/local/bin/hashctl
 
 # Verify
 hashctl version
